@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -24,6 +26,8 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.cozinhadonando.ui.theme.CozinhaDoNandoTheme
 
 class MainActivity : ComponentActivity() {
@@ -35,7 +39,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainScreen()
+                    MainScreen(rememberNavController())
                 }
             }
         }
@@ -43,10 +47,10 @@ class MainActivity : ComponentActivity() {
 }
 
 // Criação de uma class para guardar o nome e a imagem das receitas
-data class Receita(val nome: String, val tamanhoImagem : Int)
+data class Receita(val nome: String, val imagemID : Int)
 
 @Composable
-fun MainScreen() {
+fun MainScreen(navController: NavController) {
 
     val receitas = listOf(
         Receita("Frango grelhado com legumes", R.drawable.frango_legumes),
@@ -54,7 +58,9 @@ fun MainScreen() {
     )
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp)
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -69,7 +75,9 @@ fun MainScreen() {
             Image(
                 painter = painterResource(id = R.drawable.chapeu_cozinheiro),
                 contentDescription = "Chapéu de Cozinheiro",
-                modifier = Modifier.weight(1f).size(120.dp)
+                modifier = Modifier
+                    .weight(1f)
+                    .size(120.dp)
             )
         }
         Row (
@@ -86,20 +94,50 @@ fun MainScreen() {
         receitas.forEach { receita ->
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(vertical = 8.dp).fillMaxWidth()
+                modifier = Modifier
+                    .padding(vertical = 5.dp)
+                    .fillMaxWidth()
+                    .clickable {
+                        navController.navigate("detalhesScreen/${receita.nome}/${receita.imagemID}")
+                    }
             ) {
                 Image(
-                    painter = painterResource(id = receita.tamanhoImagem),
+                    painter = painterResource(id = receita.imagemID),
                     contentDescription = receita.nome,
-                    modifier = Modifier.size(120.dp)
+                    modifier = Modifier
+                        .weight(1f)
+                        .size(120.dp)
                 )
                 Text(
                     text = receita.nome,
                     style = MaterialTheme.typography.bodyLarge.copy(fontSize = 20.sp),
                     textAlign = TextAlign.Start,
-                    modifier = Modifier.padding(start = 16.dp).fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp)
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun paginaIngredientes(receita: Receita) {
+    Column (
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        Row (
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(10.dp)
+        ) {
+            Image(
+                painter = painterResource(id = receita.imagemID),
+                contentDescription = receita.nome,
+                modifier = Modifier.size(200.dp)
+            )
         }
     }
 }
@@ -108,7 +146,6 @@ fun MainScreen() {
 @Composable
 fun GreetingPreview() {
     CozinhaDoNandoTheme {
-        MainScreen()
+        MainScreen(rememberNavController())
     }
 }
-
