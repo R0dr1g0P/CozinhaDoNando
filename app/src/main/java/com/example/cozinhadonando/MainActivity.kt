@@ -20,6 +20,7 @@ import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -41,8 +42,17 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+// Criação de uma class para guardar o nome e a imagem das receitas
+data class Receita(val nome: String, val tamanhoImagem : Int)
+
 @Composable
 fun MainScreen() {
+
+    val receitas = listOf(
+        Receita("Frango grelhado com legumes", R.drawable.frango_legumes),
+        Receita("Bolo de Chocolate", R.drawable.bolo_chocolate)
+    )
+
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp)
     ) {
@@ -68,9 +78,28 @@ fun MainScreen() {
         ) {
             Text(
                 text = "Lista de Receitas:",
-                style = MaterialTheme.typography.bodyLarge.copy(fontSize = 25.sp),
-                textAlign = TextAlign.Center
+                style = MaterialTheme.typography.bodyLarge.copy(fontSize = 25.sp, fontWeight = FontWeight.Bold, textDecoration = TextDecoration.Underline),
+                textAlign = TextAlign.Start
             )
+        }
+
+        receitas.forEach { receita ->
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(vertical = 8.dp).fillMaxWidth()
+            ) {
+                Image(
+                    painter = painterResource(id = receita.tamanhoImagem),
+                    contentDescription = receita.nome,
+                    modifier = Modifier.size(120.dp)
+                )
+                Text(
+                    text = receita.nome,
+                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 20.sp),
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier.padding(start = 16.dp).fillMaxWidth()
+                )
+            }
         }
     }
 }
