@@ -27,7 +27,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.cozinhadonando.ui.theme.CozinhaDoNandoTheme
 
 class MainActivity : ComponentActivity() {
@@ -39,9 +43,31 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainScreen(rememberNavController())
+                    Navigation()
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun Navigation() {
+    val navController = rememberNavController()
+    NavHost(navController, startDestination = "mainScreen") {
+        composable("mainScreen") {
+            MainScreen(navController)
+        }
+        composable(
+            "PaginaIngredientes/{receitaNome}/{receitaImagem}",
+            arguments = listOf(
+                navArgument("receitaNome") { type = NavType.StringType },
+                navArgument("receitaImagem") { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            val receitaNome = backStackEntry.arguments?.getString("receitaNome")!!
+            val receitaImagem = backStackEntry.arguments?.getInt("receitaImagem")!!
+            val receita = Receita(receitaNome, receitaImagem)
+            PaginaIngredientes(receita)
         }
     }
 }
@@ -86,7 +112,7 @@ fun MainScreen(navController: NavController) {
         ) {
             Text(
                 text = "Lista de Receitas:",
-                style = MaterialTheme.typography.bodyLarge.copy(fontSize = 25.sp, fontWeight = FontWeight.Bold, textDecoration = TextDecoration.Underline),
+                style = MaterialTheme.typography.headlineMedium.copy(fontSize = 25.sp, fontWeight = FontWeight.Bold, textDecoration = TextDecoration.Underline),
                 textAlign = TextAlign.Start
             )
         }
@@ -98,14 +124,14 @@ fun MainScreen(navController: NavController) {
                     .padding(vertical = 5.dp)
                     .fillMaxWidth()
                     .clickable {
-                        navController.navigate("detalhesScreen/${receita.nome}/${receita.imagemID}")
+                        navController.navigate("PaginaIngredientes/${receita.nome}/${receita.imagemID}")
                     }
             ) {
                 Image(
                     painter = painterResource(id = receita.imagemID),
                     contentDescription = receita.nome,
                     modifier = Modifier
-                        .weight(1f)
+                        .weight(2f)
                         .size(120.dp)
                 )
                 Text(
@@ -113,7 +139,7 @@ fun MainScreen(navController: NavController) {
                     style = MaterialTheme.typography.bodyLarge.copy(fontSize = 20.sp),
                     textAlign = TextAlign.Start,
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .weight(5f)
                         .padding(start = 16.dp)
                 )
             }
@@ -122,9 +148,8 @@ fun MainScreen(navController: NavController) {
 }
 
 @Composable
-fun paginaIngredientes(receita: Receita) {
+fun PaginaIngredientes(receita: Receita) {
     Column (
-        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
@@ -136,15 +161,30 @@ fun paginaIngredientes(receita: Receita) {
             Image(
                 painter = painterResource(id = receita.imagemID),
                 contentDescription = receita.nome,
-                modifier = Modifier.size(200.dp)
+                modifier = Modifier
+                    .weight(2f)
+                    .size(150.dp)
             )
+            Text(
+                text = receita.nome,
+                style = MaterialTheme.typography.headlineLarge.copy(fontSize = 25.sp),
+                textAlign = TextAlign.Start,
+                modifier = Modifier
+                    .weight(4f)
+                    .padding(start = 20.dp)
+            )
+        }
+        Row (
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = "Número de doses:")
         }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+fun MainScreenPreview() {
     CozinhaDoNandoTheme {
         MainScreen(rememberNavController())
     }
