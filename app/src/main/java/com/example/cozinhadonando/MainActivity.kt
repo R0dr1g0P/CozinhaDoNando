@@ -39,16 +39,45 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.cozinhadonando.ui.theme.CozinhaDoNandoTheme
 
+
+// Classe para representar um ingrediente
+data class Ingrediente(val nome: String, val quantidadeOriginal: Float, val unidade: String)
+// Criação de uma class para guardar o nome, a imagem e os ingredientes da receita
+data class Receita(val nome: String, val imagemID : Int, val ingredientes: List<Ingrediente>)
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val receitas = listOf(
+            Receita(
+                nome = "Frango grelhado com legumes",
+                imagemID = R.drawable.frango_legumes,
+                ingredientes = listOf(
+                    Ingrediente("Peito de frango", 200f, "g"),
+                    Ingrediente("Legumes variados", 300f, "g"),
+                    Ingrediente("Azeite de oliva", 2f, "colheres de sopa"),
+                    Ingrediente("Sal", 10f, "g")
+                )
+            ),
+            Receita(
+                nome = "Bolo de Chocolate",
+                imagemID = R.drawable.bolo_chocolate,
+                ingredientes = listOf(
+                    Ingrediente("Farinha de trigo", 250f, "g"),
+                    Ingrediente("Açúcar", 200f, "g"),
+                    Ingrediente("Ovos", 4f, "unidades"),
+                    Ingrediente("Chocolate em pó", 50f, "g"),
+                    Ingrediente("Fermento em pó", 10f, "g")
+                )
+            )
+        )
         setContent {
             CozinhaDoNandoTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Navigation()
+                    Navigation(receitas)
                 }
             }
         }
@@ -56,11 +85,11 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Navigation() {
+fun Navigation(receitas: List<Receita>) {
     val navController = rememberNavController()
     NavHost(navController, startDestination = "mainScreen") {
         composable("mainScreen") {
-            MainScreen(navController)
+            MainScreen(navController, receitas)
         }
         composable(
             "PaginaIngredientes/{receitaNome}/{receitaImagem}",
@@ -71,23 +100,16 @@ fun Navigation() {
         ) { backStackEntry ->
             val receitaNome = backStackEntry.arguments?.getString("receitaNome")!!
             val receitaImagem = backStackEntry.arguments?.getInt("receitaImagem")!!
-            val receita = Receita(receitaNome, receitaImagem)
-            PaginaIngredientes(receita)
+            val receita = receitas.find { it.nome == receitaNome && it.imagemID == receitaImagem }
+            receita?.let {
+                PaginaIngredientes(it)
+            }
         }
     }
 }
 
-// Criação de uma class para guardar o nome e a imagem das receitas
-data class Receita(val nome: String, val imagemID : Int)
-
 @Composable
-fun MainScreen(navController: NavController) {
-
-    val receitas = listOf(
-        Receita("Frango grelhado com legumes", R.drawable.frango_legumes),
-        Receita("Bolo de Chocolate", R.drawable.bolo_chocolate)
-    )
-
+fun MainScreen(navController: NavController, receitas: List<Receita>) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -189,7 +211,7 @@ fun PaginaIngredientes(receita: Receita) {
                 text = "Número de doses:",
                 style = MaterialTheme.typography.bodyLarge.copy(fontSize = 20.sp)
             )
-            Spacer(modifier = Modifier.width(16.dp)) // Espaço entre o texto e o Slider
+            Spacer(modifier = Modifier.width(16.dp))
             Slider(
                 value = numDoses.toFloat(),
                 onValueChange = { setNumDoses(it.toInt()) },
@@ -203,6 +225,28 @@ fun PaginaIngredientes(receita: Receita) {
                 textAlign = TextAlign.Start
             )
         }
+        Text(
+            text = "Ingredientes:",
+            style = MaterialTheme.typography.bodyLarge.copy(fontSize = 20.sp),
+            modifier = Modifier.padding(top = 16.dp)
+        )
+        receita.ingredientes.forEach { ingrediente ->
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(vertical = 8.dp)
+            ) {
+                Text(
+                    text = "${ingrediente.nome}: ",
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.width(120.dp)
+                )
+                Text(
+                    text = "${ingrediente.quantidadeOriginal * numDoses} ${ingrediente.unidade}",
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Start
+                )
+            }
+        }
     }
 }
 
@@ -210,6 +254,6 @@ fun PaginaIngredientes(receita: Receita) {
 @Composable
 fun MainScreenPreview() {
     CozinhaDoNandoTheme {
-        MainScreen(rememberNavController())
+        MainScreen(rememberNavController(), listOf())
     }
 }
