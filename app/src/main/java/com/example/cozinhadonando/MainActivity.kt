@@ -41,7 +41,7 @@ import com.example.cozinhadonando.ui.theme.CozinhaDoNandoTheme
 
 
 // Classe para representar um ingrediente
-data class Ingrediente(val nome: String, val quantidadeOriginal: Float, val unidade: String)
+data class Ingrediente(val nome: String, val quantidadeOriginal: Int, val unidade: String)
 // Criação de uma class para guardar o nome, a imagem e os ingredientes da receita
 data class Receita(val nome: String, val imagemID : Int, val ingredientes: List<Ingrediente>)
 
@@ -53,21 +53,21 @@ class MainActivity : ComponentActivity() {
                 nome = "Frango grelhado com legumes",
                 imagemID = R.drawable.frango_legumes,
                 ingredientes = listOf(
-                    Ingrediente("Peito de frango", 200f, "g"),
-                    Ingrediente("Legumes variados", 300f, "g"),
-                    Ingrediente("Azeite de oliva", 2f, "colheres de sopa"),
-                    Ingrediente("Sal", 10f, "g")
+                    Ingrediente("Peito de frango", 200, "g"),
+                    Ingrediente("Legumes variados", 300, "g"),
+                    Ingrediente("Azeite de oliva", 2, "colheres de sopa"),
+                    Ingrediente("Sal", 10, "g")
                 )
             ),
             Receita(
                 nome = "Bolo de Chocolate",
                 imagemID = R.drawable.bolo_chocolate,
                 ingredientes = listOf(
-                    Ingrediente("Farinha de trigo", 250f, "g"),
-                    Ingrediente("Açúcar", 200f, "g"),
-                    Ingrediente("Ovos", 4f, "unidades"),
-                    Ingrediente("Chocolate em pó", 50f, "g"),
-                    Ingrediente("Fermento em pó", 10f, "g")
+                    Ingrediente("Farinha de trigo", 250, "g"),
+                    Ingrediente("Açúcar", 200, "g"),
+                    Ingrediente("Ovos", 4, "unidades"),
+                    Ingrediente("Chocolate em pó", 50, "g"),
+                    Ingrediente("Fermento em pó", 10, "g")
                 )
             )
         )
@@ -211,7 +211,6 @@ fun PaginaIngredientes(receita: Receita) {
                 text = "Número de doses:",
                 style = MaterialTheme.typography.bodyLarge.copy(fontSize = 20.sp)
             )
-            Spacer(modifier = Modifier.width(16.dp))
             Slider(
                 value = numDoses.toFloat(),
                 onValueChange = { setNumDoses(it.toInt()) },
@@ -227,10 +226,23 @@ fun PaginaIngredientes(receita: Receita) {
         }
         Text(
             text = "Ingredientes:",
-            style = MaterialTheme.typography.bodyLarge.copy(fontSize = 20.sp),
+            style = MaterialTheme.typography.bodyLarge.copy(fontSize = 20.sp, fontWeight = FontWeight.Bold, textDecoration = TextDecoration.Underline),
             modifier = Modifier.padding(top = 16.dp)
         )
         receita.ingredientes.forEach { ingrediente ->
+            val quantidadeOriginal = ingrediente.quantidadeOriginal
+            val quantidade = quantidadeOriginal * numDoses
+            var unidade: String
+            var quantidadeDisplay : String
+
+            if (quantidade >= 1000) {
+                unidade = "kg"
+                quantidadeDisplay = (quantidade / 1000f).toString()
+            } else {
+                unidade = ingrediente.unidade
+                quantidadeDisplay = quantidade.toString()
+            }
+
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(vertical = 8.dp)
@@ -238,12 +250,12 @@ fun PaginaIngredientes(receita: Receita) {
                 Text(
                     text = "${ingrediente.nome}: ",
                     style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.width(120.dp)
+                    modifier = Modifier.weight(1f)
                 )
                 Text(
-                    text = "${ingrediente.quantidadeOriginal * numDoses} ${ingrediente.unidade}",
+                    text = "$quantidadeDisplay $unidade",
                     style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.Start
+                    modifier = Modifier.weight(1f)
                 )
             }
         }
