@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,7 +23,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -110,65 +113,87 @@ fun Navigation(receitas: List<Receita>) {
 
 @Composable
 fun MainScreen(navController: NavController, receitas: List<Receita>) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
+    Box(
+        modifier = Modifier.fillMaxSize()
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(bottom = 16.dp)
+        Image(
+            painter = painterResource(id = R.drawable.background),
+            contentDescription = "background",
+            modifier = Modifier.fillMaxSize().align(Alignment.Center),
+            contentScale = ContentScale.Crop
+        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
         ) {
-            Text(
-                text = "As Receitas do Chef Nando",
-                style = MaterialTheme.typography.headlineLarge.copy(fontSize = 35.sp, fontWeight = FontWeight.Bold),
-                textAlign = TextAlign.Center,
-                modifier = Modifier.weight(3f)
-            )
-            Image(
-                painter = painterResource(id = R.drawable.chapeu_cozinheiro),
-                contentDescription = "Chapéu de Cozinheiro",
-                modifier = Modifier
-                    .weight(1f)
-                    .size(120.dp)
-            )
-        }
-        Row (
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(10.dp)
-        ) {
-            Text(
-                text = "Lista de Receitas:",
-                style = MaterialTheme.typography.headlineMedium.copy(fontSize = 25.sp, fontWeight = FontWeight.Bold, textDecoration = TextDecoration.Underline),
-                textAlign = TextAlign.Start
-            )
-        }
-
-        receitas.forEach { receita ->
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "As Receitas do Chef Nando",
+                    style = MaterialTheme.typography.headlineLarge.copy(
+                        fontSize = 35.sp,
+                        color = Color.Black,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.weight(3f)
+                )
+                Image(
+                    painter = painterResource(id = R.drawable.chapeu_cozinheiro),
+                    contentDescription = "Chapéu de Cozinheiro",
+                    modifier = Modifier
+                        .weight(1f)
+                        .size(200.dp)
+                )
+            }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .padding(vertical = 5.dp)
-                    .fillMaxWidth()
-                    .clickable {
-                        navController.navigate("PaginaIngredientes/${receita.nome}/${receita.imagemID}")
-                    }
+                modifier = Modifier.padding(10.dp)
             ) {
-                Image(
-                    painter = painterResource(id = receita.imagemID),
-                    contentDescription = receita.nome,
-                    modifier = Modifier
-                        .weight(2f)
-                        .size(120.dp)
-                )
                 Text(
-                    text = receita.nome,
-                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 20.sp),
-                    textAlign = TextAlign.Start,
-                    modifier = Modifier
-                        .weight(5f)
-                        .padding(start = 16.dp)
+                    text = "- Lista de Receitas:",
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        fontSize = 30.sp,
+                        color = Color.Black,
+                        fontWeight = FontWeight.Bold,
+                        textDecoration = TextDecoration.Underline
+                    ),
+                    textAlign = TextAlign.Start
                 )
+            }
+
+            receitas.forEach { receita ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .padding(vertical = 5.dp)
+                        .fillMaxWidth()
+                        .clickable {
+                            navController.navigate("PaginaIngredientes/${receita.nome}/${receita.imagemID}")
+                        }
+                ) {
+                    Image(
+                        painter = painterResource(id = receita.imagemID),
+                        contentDescription = receita.nome,
+                        modifier = Modifier
+                            .weight(1f)
+                            .size(120.dp)
+                    )
+                    Text(
+                        text = receita.nome,
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            fontSize = 25.sp,
+                            color = Color.Black,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier
+                            .weight(2f)
+                            .padding(start = 16.dp)
+                    )
+                }
             }
         }
     }
@@ -179,84 +204,118 @@ fun PaginaIngredientes(receita: Receita) {
 
     val (numDoses, setNumDoses) = remember { mutableStateOf(1) }
 
-    Column (
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
+    Box(
+        modifier = Modifier.fillMaxSize()
     ) {
-        Row (
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(10.dp)
-        ) {
-            Image(
-                painter = painterResource(id = receita.imagemID),
-                contentDescription = receita.nome,
-                modifier = Modifier
-                    .weight(2f)
-                    .size(150.dp)
-            )
-            Text(
-                text = receita.nome,
-                style = MaterialTheme.typography.headlineLarge.copy(fontSize = 25.sp),
-                textAlign = TextAlign.Start,
-                modifier = Modifier
-                    .weight(4f)
-                    .padding(start = 20.dp)
-            )
-        }
-        Row (
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Número de doses:",
-                style = MaterialTheme.typography.bodyLarge.copy(fontSize = 20.sp)
-            )
-            Slider(
-                value = numDoses.toFloat(),
-                onValueChange = { setNumDoses(it.toInt()) },
-                valueRange = 1f..10f,
-                steps = 9,
-                modifier = Modifier.weight(1f)
-            )
-            Text(
-                text = numDoses.toString(),
-                style = MaterialTheme.typography.bodyLarge.copy(fontSize = 20.sp),
-                textAlign = TextAlign.Start
-            )
-        }
-        Text(
-            text = "Ingredientes:",
-            style = MaterialTheme.typography.bodyLarge.copy(fontSize = 20.sp, fontWeight = FontWeight.Bold, textDecoration = TextDecoration.Underline),
-            modifier = Modifier.padding(top = 16.dp)
+        Image(
+            painter = painterResource(id = R.drawable.background),
+            contentDescription = "background",
+            modifier = Modifier.fillMaxSize().align(Alignment.Center),
+            contentScale = ContentScale.Crop
         )
-        receita.ingredientes.forEach { ingrediente ->
-            val quantidadeOriginal = ingrediente.quantidadeOriginal
-            val quantidade = quantidadeOriginal * numDoses
-            var unidade: String
-            var quantidadeDisplay : String
-
-            if (quantidade >= 1000) {
-                unidade = "kg"
-                quantidadeDisplay = (quantidade / 1000f).toString()
-            } else {
-                unidade = ingrediente.unidade
-                quantidadeDisplay = quantidade.toString()
-            }
-
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
             Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(vertical = 8.dp)
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(id = receita.imagemID),
+                    contentDescription = receita.nome,
+                    modifier = Modifier
+                        .weight(1f)
+                        .size(150.dp)
+                )
+                Text(
+                    text = receita.nome,
+                    style = MaterialTheme.typography.headlineLarge.copy(
+                        fontSize = 30.sp,
+                        color = Color.Black,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier
+                        .weight(2f)
+                        .padding(start = 20.dp)
+                )
+            }
+            Row(
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "${ingrediente.nome}: ",
-                    style = MaterialTheme.typography.bodyLarge,
+                    text = "Número de doses:",
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        fontSize = 20.sp,
+                        color = Color.Black,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+                Slider(
+                    value = numDoses.toFloat(),
+                    onValueChange = { setNumDoses(it.toInt()) },
+                    valueRange = 1f..10f,
+                    steps = 9,
                     modifier = Modifier.weight(1f)
                 )
                 Text(
-                    text = "$quantidadeDisplay $unidade",
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.weight(1f)
+                    text = numDoses.toString(),
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        fontSize = 20.sp,
+                        color = Color.Black,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    textAlign = TextAlign.Start
                 )
+            }
+            Text(
+                text = "- Ingredientes:",
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    fontSize = 30.sp,
+                    color = Color.Black,
+                    fontWeight = FontWeight.Bold,
+                    textDecoration = TextDecoration.Underline
+                ),
+                modifier = Modifier.padding(top = 16.dp)
+            )
+            receita.ingredientes.forEach { ingrediente ->
+                val quantidadeOriginal = ingrediente.quantidadeOriginal
+                val quantidade = quantidadeOriginal * numDoses
+                var unidade: String
+                var quantidadeDisplay: String
+
+                if (quantidade >= 1000) {
+                    unidade = "kg"
+                    quantidadeDisplay = (quantidade / 1000f).toString()
+                } else {
+                    unidade = ingrediente.unidade
+                    quantidadeDisplay = quantidade.toString()
+                }
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                ) {
+                    Text(
+                        text = "${ingrediente.nome}: ",
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            fontSize = 20.sp,
+                            color = Color.Black,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        modifier = Modifier.weight(4f)
+                    )
+                    Text(
+                        text = "$quantidadeDisplay $unidade",
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            fontSize = 20.sp,
+                            color = Color.Black,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        modifier = Modifier.weight(3f)
+                    )
+                }
             }
         }
     }
