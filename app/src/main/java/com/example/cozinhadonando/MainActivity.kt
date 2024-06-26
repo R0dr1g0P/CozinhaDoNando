@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
@@ -44,7 +46,7 @@ import com.example.cozinhadonando.ui.theme.CozinhaDoNandoTheme
 
 
 // Classe para representar um ingrediente
-data class Ingrediente(val nome: String, val quantidadeOriginal: Int, val unidade: String)
+data class Ingrediente(val nome: String, val quantidadeOriginal: Float, val unidade: String)
 // Criação de uma class para guardar o nome, a imagem e os ingredientes da receita
 data class Receita(val nome: String, val imagemID : Int, val ingredientes: List<Ingrediente>)
 
@@ -56,21 +58,90 @@ class MainActivity : ComponentActivity() {
                 nome = "Frango grelhado com legumes",
                 imagemID = R.drawable.frango_legumes,
                 ingredientes = listOf(
-                    Ingrediente("Peito de frango", 200, "g"),
-                    Ingrediente("Legumes variados", 300, "g"),
-                    Ingrediente("Azeite de oliva", 2, "colheres de sopa"),
-                    Ingrediente("Sal", 10, "g")
+                    Ingrediente("Peito de frango", 200f, "g"),
+                    Ingrediente("Azeite", 2f, "colheres de sopa"),
+                    Ingrediente("Alho picado", 1f, "dente(s)"),
+                    Ingrediente("Limão espremido", 1f, "unidade(s)"),
+                    Ingrediente("Cenoura", 150f, "g"),
+                    Ingrediente("Abóbora", 150f, "g"),
+                    Ingrediente("Pimentos", 100f, "g"),
+                    Ingrediente("Ervas Aromáticas", 1f, "colher(es) de chá"),
+                    Ingrediente("Sal", 1f, "colher(es) de chá"),
+                    Ingrediente("Pimenta", 1f, "colher(es) de chá")
+                )
+            ),
+            Receita(
+                nome = "Wrap de Frango",
+                imagemID = R.drawable.wrap_frango,
+                ingredientes = listOf(
+                    Ingrediente("Peito de frango cozido e desfiado", 100f, "g"),
+                    Ingrediente("Tortilla de trigo", 1f, "unidade(s)"),
+                    Ingrediente("Alface", 1f, "folha(s)"),
+                    Ingrediente("Tomate picado", 50f, "g"),
+                    Ingrediente("Queijo ralado", 30f, "g"),
+                    Ingrediente("Maionese ou iogurte", 1f, "colher(es) de sopa"),
+                    Ingrediente("Mostarda", 1f, "colher(es) de chá"),
+                    Ingrediente("Sal", 1f, "pitada(s)"),
+                    Ingrediente("Pimenta", 1f, "pitada(s)")
+                )
+            ),
+            Receita(
+                nome = "Peixe grelhado com batata assada",
+                imagemID = R.drawable.peixe_batatas,
+                ingredientes = listOf(
+                    Ingrediente("Filete de peixe", 150f, "g"),
+                    Ingrediente("Azeite", 2f, "colheres de sopa"),
+                    Ingrediente("Limão espremido", 1f, "unidade(s)"),
+                    Ingrediente("Sal", 1f, "pitada(s)"),
+                    Ingrediente("Pimenta", 1f, "pitada(s)"),
+                    Ingrediente("Batata", 200f, "g"),
+                    Ingrediente("Alecrim fresco", 1f, "ramo(s)"),
+                    Ingrediente("Alho", 1f, "dente(s)"),
+                    Ingrediente("Páprica", 1f, "pitada(s)")
+                )
+            ),
+            Receita(
+                nome = "Risoto de Cogumelos",
+                imagemID = R.drawable.risoto_cogumelos,
+                ingredientes = listOf(
+                    Ingrediente("Arroz de risoto", 80f, "g"),
+                    Ingrediente("Cogumelos fatiados", 100f, "g"),
+                    Ingrediente("Cebola picada", 30f, "g"),
+                    Ingrediente("Alho picado", 1f, "dente(s)"),
+                    Ingrediente("Caldo de legumes", 250f, "ml"),
+                    Ingrediente("Vinho branco", 30f, "ml"),
+                    Ingrediente("Queijo ralado", 30f, "g"),
+                    Ingrediente("Manteiga", 1f, "colher(es) de sopa"),
+                    Ingrediente("Azeite", 1f, "colher(es) de sopa"),
+                    Ingrediente("Sal", 1f, "pitada(s)"),
+                    Ingrediente("Pimenta", 1f, "pitada(s)")
                 )
             ),
             Receita(
                 nome = "Bolo de Chocolate",
                 imagemID = R.drawable.bolo_chocolate,
                 ingredientes = listOf(
-                    Ingrediente("Farinha de trigo", 250, "g"),
-                    Ingrediente("Açúcar", 200, "g"),
-                    Ingrediente("Ovos", 4, "unidades"),
-                    Ingrediente("Chocolate em pó", 50, "g"),
-                    Ingrediente("Fermento em pó", 10, "g")
+                    Ingrediente("Farinha de trigo", 30f, "g"),
+                    Ingrediente("Açúcar", 30f, "g"),
+                    Ingrediente("Chocolate em pó", 15f, "g"),
+                    Ingrediente("Ovo", 1f, "unidade(s)"),
+                    Ingrediente("Leite", 45f, "ml"),
+                    Ingrediente("Óleo vegetal", 45f, "ml"),
+                    Ingrediente("Fermento em pó", 1f, "g"),
+                    Ingrediente("Sal", 1f, "pitada(s)")
+                )
+            ),
+            Receita(
+                nome = "Panqueca",
+                imagemID = R.drawable.panqueca,
+                ingredientes = listOf(
+                    Ingrediente("Farinha de trigo", 60f, "g"),
+                    Ingrediente("Açúcar", 10f, "g"),
+                    Ingrediente("Fermento em pó", 4f, "g"),
+                    Ingrediente("Sal", 1f, "pitada(s)"),
+                    Ingrediente("Leite", 60f, "ml"),
+                    Ingrediente("Ovos", 1f, "unidade(s)"),
+                    Ingrediente("Manteiga derretida", 15f, "g")
                 )
             )
         )
@@ -113,6 +184,9 @@ fun Navigation(receitas: List<Receita>) {
 
 @Composable
 fun MainScreen(navController: NavController, receitas: List<Receita>) {
+
+    val scrollState = rememberScrollState()
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -126,6 +200,7 @@ fun MainScreen(navController: NavController, receitas: List<Receita>) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp)
+                .verticalScroll(scrollState)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
@@ -203,6 +278,7 @@ fun MainScreen(navController: NavController, receitas: List<Receita>) {
 fun PaginaIngredientes(receita: Receita) {
 
     val (numDoses, setNumDoses) = remember { mutableStateOf(1) }
+    val scrollState = rememberScrollState()
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -217,6 +293,7 @@ fun PaginaIngredientes(receita: Receita) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp)
+                .verticalScroll(scrollState)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
@@ -282,15 +359,18 @@ fun PaginaIngredientes(receita: Receita) {
             receita.ingredientes.forEach { ingrediente ->
                 val quantidadeOriginal = ingrediente.quantidadeOriginal
                 val quantidade = quantidadeOriginal * numDoses
-                var unidade: String
-                var quantidadeDisplay: String
-
-                if (quantidade >= 1000) {
-                    unidade = "kg"
-                    quantidadeDisplay = (quantidade / 1000f).toString()
-                } else {
-                    unidade = ingrediente.unidade
-                    quantidadeDisplay = quantidade.toString()
+                val (quantidadeDisplay, unidade) = when (ingrediente.unidade) {
+                    "g" -> if (quantidade >= 1000) {
+                        (quantidade / 1000).toString() to "kg"
+                    } else {
+                        quantidade.toInt().toString() to "g"
+                    }
+                    "ml" -> if (quantidade >= 1000) {
+                        (quantidade / 1000).toString() to "L"
+                    } else {
+                        quantidade.toInt().toString() to "ml"
+                    }
+                    else -> quantidade.toInt().toString() to ingrediente.unidade
                 }
 
                 Row(
